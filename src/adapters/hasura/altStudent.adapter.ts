@@ -473,7 +473,7 @@ export class ALTStudentService {
         }
       }
     });
-    query += `user: {status: {_eq: true}}`;
+    query += `,user: {status: {_eq: true}}`;
 
     const data = {
       query: `query SearchStudent($limit:Int, $offset:Int) {
@@ -526,7 +526,6 @@ export class ALTStudentService {
         offset: offset,
       },
     };
-console.log(data);
     const config = {
       method: "post",
       url: this.baseURL,
