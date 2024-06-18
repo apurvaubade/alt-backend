@@ -473,6 +473,7 @@ export class ALTStudentService {
         }
       }
     });
+    
     query += `,user: {status: {_eq: true}}`;
 
     const data = {
