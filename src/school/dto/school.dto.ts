@@ -1,4 +1,4 @@
-import { Exclude, Expose } from "class-transformer";
+import { Exclude, Expose, Transform } from "class-transformer";
 import {
   MaxLength,
   IsNotEmpty,
@@ -7,17 +7,51 @@ import {
   IsNumber,
   IsIn,
   IsEnum,
+  IsNumberString,
+  IsUUID,
+  IsOptional,
+  Matches,
 } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
+enum Management {
+  State_Government = "State_Government",
+  Government_Aided = "Government_Aided",
+  Tribal = "Tribal",
+  Local_Bodies = "Local_Bodies",
+  Private_Unaided = "Private_Unaided",
+  Others = "Others",
+}
+
+enum Composition {
+  Girls = "Girls",
+  Boys = "Boys",
+  CoEducation = "CoEducation",
+}
+
+enum HeadmasterType {
+  FullTime = "FullTime",
+  Incharge = "Incharge",
+  PartTime = "PartTime",
+}
+
+enum SchoolLocation {
+  Urban = "Urban",
+  Rural = "Rural",
+}
+
 export class SchoolDto {
   @Expose()
+  @IsUUID()
+  @IsOptional()
   schoolId: string;
 
   @ApiProperty({
     type: String,
     description: "The udise of the school",
   })
+  @IsNotEmpty()
+  @IsNumberString()
   @Expose()
   udiseCode: string;
 
@@ -25,28 +59,35 @@ export class SchoolDto {
     type: String,
     description: "The schoolName of the school",
   })
+  @IsNotEmpty()
+  @IsString()
   @Expose()
   name: string;
 
   @ApiProperty({
-    type: String,
+    enum: SchoolLocation,
     description: "The location of the school",
   })
   @Expose()
+  @IsEnum(SchoolLocation)
   location: string;
 
   @ApiProperty({
-    type: String,
+    enum: Management,
     description: "The management of the school",
   })
   @Expose()
+  @IsEnum(Management)
   management: string;
 
   @ApiProperty({
-    type: String,
+    enum: Composition,
     description: "The composition of the school",
   })
   @Expose()
+  @IsEnum(Composition)
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   composition: string;
 
   @ApiProperty({
@@ -71,10 +112,23 @@ export class SchoolDto {
   headmaster: string;
 
   @ApiProperty({
+    enum: HeadmasterType,
+    description: "The Head master type of the school",
+  })
+  @Expose()
+  @IsEnum(HeadmasterType)
+  @Transform((params) => (params.value === "" ? null : params.value))
+  headmasterType: string;
+
+  @ApiProperty({
     type: String,
     description: "The headmaster Mobile of the school",
   })
   @Expose()
+  @IsNumberString()
+  @Matches(/^[6-9]\d{9}$/, { message: "Invalid mobile number" })
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   headmasterMobile: string;
 
   @ApiProperty({
@@ -82,6 +136,8 @@ export class SchoolDto {
     description: "The upper Primary Teachers Sanctioned of the school",
   })
   @Expose()
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   upperPrimaryTeachersSanctioned: number;
 
   @ApiProperty({
@@ -89,29 +145,37 @@ export class SchoolDto {
     description: "The secondary Teachers Sanctioned of the school",
   })
   @Expose()
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   secondaryTeachersSanctioned: number;
 
   @ApiProperty({
-    type: Boolean,
+    type: String,
     description: "The library Functional of the school",
     default: false,
   })
   @Expose()
-  libraryFunctional: boolean;
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
+  libraryFunctional: string;
 
   @ApiProperty({
-    type: Boolean,
+    type: String,
     description: "The computer Lab Functional of the school",
     default: false,
   })
   @Expose()
-  computerLabFunctional: boolean;
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
+  computerLabFunctional: string;
 
   @ApiProperty({
     type: Number,
     description: "The total Functional Computers of the school",
   })
   @Expose()
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   totalFunctionalComputers: number;
 
   @ApiProperty({
@@ -119,6 +183,8 @@ export class SchoolDto {
     description: "The no Of Boys Toilet  of the school",
   })
   @Expose()
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   noOfBoysToilet: number;
 
   @ApiProperty({
@@ -126,53 +192,61 @@ export class SchoolDto {
     description: "The no Of Girls Toilet  of the school",
   })
   @Expose()
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   noOfGirlsToilet: number;
 
   @ApiProperty({
-    type: Boolean,
+    type: String,
     description: "The smrt Brd 6 Functional  of the school",
-    default: false,
   })
   @Expose()
-  smrtBrd6Functional: boolean;
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
+  smartBoardFunctionalClass6: string;
 
   @ApiProperty({
-    type: Boolean,
+    type: String,
     description: "The smrt Brd 7 Functional  of the school",
-    default: false,
   })
   @Expose()
-  smrtBrd7Functional: boolean;
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
+  smartBoardFunctionalClass7: string;
 
   @ApiProperty({
-    type: Boolean,
+    type: String,
     description: "The smrt Brd 8 Functional  of the school",
-    default: false,
   })
   @Expose()
-  smrtBrd8Functional: boolean;
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
+  smartBoardFunctionalClass8: string;
 
   @ApiProperty({
-    type: Boolean,
+    type: String,
     description: "The smrt Brd 9 Functional  of the school",
-    default: false,
   })
   @Expose()
-  smrtBrd9Functional: boolean;
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
+  smartBoardFunctionalClass9: string;
 
   @ApiProperty({
-    type: Boolean,
+    type: String,
     description: "The smrt Brd 10 Functional  of the school",
-    default: false,
   })
   @Expose()
-  smrtBrd10Functional: boolean;
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
+  smartBoardFunctionalClass10: string;
 
   @ApiProperty({
     type: String,
     description: "The state of the school",
   })
   @Expose()
+  @IsNotEmpty()
   state: string;
 
   @ApiProperty({
@@ -180,6 +254,7 @@ export class SchoolDto {
     description: "The district of the school",
   })
   @Expose()
+  @IsNotEmpty()
   district: string;
 
   @ApiProperty({
@@ -187,6 +262,7 @@ export class SchoolDto {
     description: "The block of the school",
   })
   @Expose()
+  @IsNotEmpty()
   block: string;
 
   @ApiProperty({
@@ -195,6 +271,8 @@ export class SchoolDto {
     default: false,
   })
   @Expose()
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   adequateRoomsForEveryClass: boolean;
 
   @ApiProperty({
@@ -203,6 +281,8 @@ export class SchoolDto {
     default: false,
   })
   @Expose()
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   drinkingWaterSupply: boolean;
 
   @ApiProperty({
@@ -211,6 +291,8 @@ export class SchoolDto {
     default: false,
   })
   @Expose()
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   seperateToiletForGirlsAndBoys: boolean;
 
   @ApiProperty({
@@ -219,6 +301,8 @@ export class SchoolDto {
     default: false,
   })
   @Expose()
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   whetherToiletBeingUsed: boolean;
 
   @ApiProperty({
@@ -227,6 +311,8 @@ export class SchoolDto {
     default: false,
   })
   @Expose()
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   playgroundAvailable: boolean;
 
   @ApiProperty({
@@ -235,6 +321,8 @@ export class SchoolDto {
     default: false,
   })
   @Expose()
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   boundaryWallFence: boolean;
 
   @ApiProperty({
@@ -243,6 +331,8 @@ export class SchoolDto {
     default: false,
   })
   @Expose()
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   electricFittingsAreInsulated: boolean;
 
   @ApiProperty({
@@ -252,6 +342,8 @@ export class SchoolDto {
     default: false,
   })
   @Expose()
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   buildingIsResistantToEarthquakeFireFloodOtherCalamity: boolean;
 
   @ApiProperty({
@@ -261,6 +353,8 @@ export class SchoolDto {
     default: false,
   })
   @Expose()
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   buildingIsFreeFromInflammableAndToxicMaterials: boolean;
 
   @ApiProperty({
@@ -269,101 +363,9 @@ export class SchoolDto {
     default: false,
   })
   @Expose()
+  @IsOptional()
+  @Transform((params) => (params.value === "" ? null : params.value))
   roofAndWallsAreInGoodCondition: boolean;
-
-  // @ApiProperty({
-  //   type: String,
-  //   description: "The email of the school",
-  // })
-  // @IsEmail()
-  // @Expose()
-  // email: string;
-
-  // @ApiProperty({
-  //   type: Number,
-  //   description: "The phone number of the school",
-  // })
-  // @IsNumber()
-  // @Expose()
-  // phoneNumber: Number;
-
-  // @ApiProperty({
-  //   type: String,
-  //   description: "The address of the school",
-  // })
-  // @Expose()
-  // address: string;
-
-  // @ApiProperty({
-  //   type: String,
-  //   description: "The schoolType of the school",
-  // })
-  // @Expose()
-  // schoolType: string;
-
-  // @ApiProperty({
-  //   type: String,
-  //   description: "The website of the school",
-  // })
-  // @Expose()
-  // website: string;
-
-  // @ApiProperty({
-  //   type: String,
-  //   description: "The village of the school",
-  // })
-  // @Expose()
-  // village: string;
-
-  // @ApiProperty({
-  //   type: Number,
-  //   description: "The pincode of the school",
-  // })
-  // @Expose()
-  // pincode: Number;
-
-  // @ApiProperty({
-  //   type: String,
-  //   description: "The cluster of the school",
-  // })
-  // @Expose()
-  // cluster: string;
-
-  // @ApiProperty({
-  //   type: String,
-  //   description: "The enrollCount of the school",
-  // })
-  // @Expose()
-  // enrollCount: string;
-
-  // @ApiProperty({
-  //   type: String,
-  //   description: "The status of the school",
-  // })
-  // @Expose()
-  // status: string;
-
-  // @ApiProperty({
-  //   type: Number,
-  //   description: "The latitude of the school",
-  // })
-  // @Expose()
-  // latitude: Number;
-
-  // @ApiProperty({
-  //   type: Number,
-  //   description: "The longitude of the school",
-  // })
-  // @Expose()
-  // longitude: Number;
-
-  // @ApiPropertyOptional()
-  // @Expose()
-  // metaData: [string];
-
-  // @ApiPropertyOptional({})
-  // @Expose()
-  // deactivationReason: string;
 
   @Expose()
   createdAt: string;

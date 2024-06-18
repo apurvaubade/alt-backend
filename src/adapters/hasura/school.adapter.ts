@@ -29,8 +29,22 @@ export class SchoolHasuraService implements IServicelocator {
         // schoolSchema[e] != "" &&
         Object.keys(schoolSchema).includes(e)
       ) {
-        if (e === "management" || e === "libraryFunctional") {
-          query += `${e}: ${schoolSchema[e]},`;
+        if (
+          e === "management" ||
+          e === "headmasterType" ||
+          e === "headmasterMobile" ||
+          e === "composition" ||
+          e === "mediumOfInstruction" ||
+          e === "smartBoardFunctionalClass6" ||
+          e === "smartBoardFunctionalClass7" ||
+          e === "smartBoardFunctionalClass8" ||
+          e === "smartBoardFunctionalClass9" ||
+          e === "smartBoardFunctionalClass10" ||
+          e === "location" ||
+          e === "computerLabFunctional"
+        ) {
+          const value = schoolSchema[e] ? schoolSchema[e] : null;
+          query += `${e}: ${value},`;
         } else if (Array.isArray(schoolSchema[e])) {
           query += `${e}: ${JSON.stringify(schoolSchema[e])}, `;
         } else {
@@ -39,7 +53,7 @@ export class SchoolHasuraService implements IServicelocator {
       }
     });
 
-    var data = {
+    const data = {
       query: `mutation CreateSchool {
         insert_School_one(object: {${query}}) {
         udiseCode
@@ -48,7 +62,6 @@ export class SchoolHasuraService implements IServicelocator {
       `,
       variables: {},
     };
-
     const headers = {
       Authorization: request.headers.authorization,
       "x-hasura-role": getUserRole(altUserRoles),
@@ -72,7 +85,7 @@ export class SchoolHasuraService implements IServicelocator {
     const result = response.data.data.insert_School_one;
 
     return new SuccessResponse({
-      statusCode: 200,
+      statusCode: 201,
       message: "Ok.",
       data: result,
     });
@@ -163,11 +176,12 @@ export class SchoolHasuraService implements IServicelocator {
             totalFunctionalComputers
             noOfBoysToilet
             noOfGirlsToilet
-            smrtBrd6Functional
-            smrtBrd7Functional
-            smrtBrd8Functional
-            smrtBrd9Functional
-            smrtBrd10Functional
+            smartBoardFunctionalClass6
+            smartBoardFunctionalClass7
+            smartBoardFunctionalClass8
+            smartBoardFunctionalClass9
+            smartBoardFunctionalClass10
+            headmasterType
             state
             district
             block
@@ -232,17 +246,29 @@ export class SchoolHasuraService implements IServicelocator {
     let query = "";
     Object.keys(schoolSearchDto.filters).forEach((e) => {
       if (schoolSearchDto.filters[e] && schoolSearchDto.filters[e] != "") {
-        if (e === "schoolName") {
+        if (
+          e === "management" ||
+          e === "libraryFunctional" ||
+          e === "composition" ||
+          e === "mediumOfInstruction" ||
+          e === "headmaster"
+        ) {
+          query += `${e}:{_eq: ${schoolSearchDto.filters[e]}},`;
+        } else if (e === "name") {
           query += `${e}:{_ilike: "%${schoolSearchDto.filters[e]}%"}`;
         } else {
           query += `${e}:{_eq:"${schoolSearchDto.filters[e]}"}`;
         }
       }
     });
-
     var data = {
       query: `query SearchSchool($limit:Int, $offset:Int) {
-            School(where:{ ${query}}, limit: $limit, offset: $offset,) {
+        School_aggregate {
+          aggregate {
+            count
+          }
+        }
+        School(where:{ ${query}}, limit: $limit, offset: $offset,) {
             name
             udiseCode                                             
             id
@@ -260,11 +286,12 @@ export class SchoolHasuraService implements IServicelocator {
             totalFunctionalComputers
             noOfBoysToilet
             noOfGirlsToilet
-            smrtBrd6Functional
-            smrtBrd7Functional
-            smrtBrd8Functional
-            smrtBrd9Functional
-            smrtBrd10Functional
+            smartBoardFunctionalClass6
+            smartBoardFunctionalClass7
+            smartBoardFunctionalClass8
+            smartBoardFunctionalClass9
+            smartBoardFunctionalClass10
+            headmasterType
             state
             district
             block
@@ -280,9 +307,8 @@ export class SchoolHasuraService implements IServicelocator {
             buildingIsResistantToEarthquakeFireFloodOtherCalamity
             buildingIsFreeFromInflammableAndToxicMaterials
             roofAndWallsAreInGoodCondition
-            }
-          }`,
-
+        }
+      }`,
       variables: {
         limit: parseInt(schoolSearchDto.limit),
         offset: offset,
@@ -294,7 +320,6 @@ export class SchoolHasuraService implements IServicelocator {
       headers: {
         Authorization: request.headers.authorization,
         "x-hasura-role": getUserRole(altUserRoles),
-
         "Content-Type": "application/json",
       },
       data: data,
@@ -440,20 +465,20 @@ export class SchoolHasuraService implements IServicelocator {
           : "",
         noOfBoysToilet: item?.noOfBoysToilet ? `${item.noOfBoysToilet}` : "",
         noOfGirlsToilet: item?.noOfGirlsToilet ? `${item.noOfGirlsToilet}` : "",
-        smrtBrd6Functional: item?.smrtBrd6Functional
-          ? `${item.smrtBrd6Functional}`
+        smartBoardFunctionalClass6: item?.smartBoardFunctionalClass6
+          ? `${item.smartBoardFunctionalClass6}`
           : "",
-        smrtBrd7Functional: item?.smrtBrd7Functional
-          ? `${item.smrtBrd7Functional}`
+        smartBoardFunctionalClass7: item?.smartBoardFunctionalClass7
+          ? `${item.smartBoardFunctionalClass7}`
           : "",
-        smrtBrd8Functional: item?.smrtBrd8Functional
-          ? `${item.smrtBrd8Functional}`
+        smartBoardFunctionalClass8: item?.smartBoardFunctionalClass8
+          ? `${item.smartBoardFunctionalClass8}`
           : "",
-        smrtBrd9Functional: item?.smrtBrd9Functional
-          ? `${item.smrtBrd9Functional}`
+        smartBoardFunctionalClass9: item?.smartBoardFunctionalClass9
+          ? `${item.smartBoardFunctionalClass9}`
           : "",
-        smrtBrd10Functional: item?.smrtBrd10Functional
-          ? `${item.smrtBrd10Functional}`
+        smartBoardFunctionalClass10: item?.smartBoardFunctionalClass6
+          ? `${item.smartBoardFunctionalClass6}`
           : "",
         adequateRoomsForEveryClass: item?.adequateRoomsForEveryClass
           ? `${item.adequateRoomsForEveryClass}`
@@ -488,6 +513,7 @@ export class SchoolHasuraService implements IServicelocator {
         roofAndWallsAreInGoodCondition: item?.roofAndWallsAreInGoodCondition
           ? `${item.roofAndWallsAreInGoodCondition}`
           : "",
+        headmasterType: item?.headmasterType ? `${item.headmasterType}` : "",
       };
       return new SchoolDto(schoolMapping);
     });

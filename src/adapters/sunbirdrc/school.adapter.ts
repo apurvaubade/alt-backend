@@ -112,6 +112,7 @@ export class SchoolService implements IServicelocator {
       );
       
   }
+  getAllSchool(request: any) {}
 
   getAllSchool(request: any) {}
 
