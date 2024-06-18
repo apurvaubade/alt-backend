@@ -10,6 +10,8 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  
+
   @Get("files/:fileName")
   seeUploadedFile(@Param("fileName") fileName: string, @Res() res) {
     return res.sendFile(fileName, { root: "./uploads" });
